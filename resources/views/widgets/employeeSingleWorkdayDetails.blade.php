@@ -18,7 +18,8 @@
                             <tr>
                                 <th>Sl</th>
                                 <th>Time</th>
-                                <th>Activity</th>
+                                <th width="10%">Activity</th>
+                                <th></th>
                                 <th>Note</th>
                                                                 
                             </tr>
@@ -30,7 +31,7 @@
                                 <tr>
                                     <td>{{ ++$index }}</td>
                                     <td>{{ date("h:i A", strtotime($item->action_time) ) }}</td>
-                                    <td><span class="btn 
+                                    <td><span class="btn btn-sm btn-block
                                             @if($item->status == 'ON_DESK')
                                                 btn-success
                                             @elseif($item->status == 'OFF_DESK')
@@ -38,11 +39,20 @@
                                             @elseif($item->status == 'DESK_OPEN')
                                                 btn-primary
                                             @elseif($item->status == 'DESK_CLOSE')
-                                                btn-black
+                                                btn-dark
                                             @endif
                                         ">                                            
-                                            {{ $item->status }}
+                                            @if($item->status == 'ON_DESK')
+                                                ON
+                                            @elseif($item->status == 'OFF_DESK')
+                                                PAUSE
+                                            @elseif($item->status == 'DESK_OPEN')
+                                                OPENED
+                                            @elseif($item->status == 'DESK_CLOSE')
+                                                CLOSED
+                                            @endif
                                         </span></td>
+                                    <td></td>
                                     <td>{{ $item->note }}</td>                                    
                                 </tr>
                             @empty

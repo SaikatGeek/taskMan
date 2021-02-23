@@ -2,7 +2,7 @@
 
     @extends('layouts.master')
 
-    @section('title', 'My Daily Work Day Details')
+    @section('title', 'My Daily Working Hour Details')
 
     @section('content')
         @include('widgets.myDailyDetails')

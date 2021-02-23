@@ -10,15 +10,12 @@
       
     <div class="table-responsive">
       <div class="form-group">
-        <input type="text" id="search" class="form-control ">
-      
+        <input type="text" id="search" class="form-control" >      
       </div>
-
      
-            @foreach($NotificationList as $index => $item)
-              
+            @foreach($NotificationList as $index => $item)              
 
-              <a  href="{{ url('/').''.$item->reference }}"  >
+              <a  href="{{ url('/').''.$item->reference }}"  id="notification">
               <div class="card-box mb-2" >
                 <div class="row align-items-center">
                     <div class="col-sm-8">
@@ -86,7 +83,8 @@
 <script type="text/javascript">
     $( document ).ready(function() {
         
-      var $rows = $('#table tr');
+      var $rows = $('#notification');
+      
       $('#search').keyup(function() {
           var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
           

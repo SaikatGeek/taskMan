@@ -5,29 +5,58 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    @if($DESK_OPEN == true) 
-                        <form action="{{ url('my/workday/status/action') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="status" value="DESK_CLOSE">
-                            <button type="submit" class="btn btn-danger waves-effect waves-light">
-                                <span class="btn-label"><i class="mdi mdi-power"></i></span>Close Your Desk
-                            </button>                            
-                        </form>
-                        <br>
-                    @elseif ($DESK_OPEN == false)
-                        @if($proceed == false)
-                        @else
-                            <form action="{{ url('my/workday/status/action') }}" method="POST">
+                    @if($Today == 1)
+                        @if($DESK_OPEN == 'DESK_CLOSE')
+                            
+                        @elseif($DESK_OPEN == 'DESK_OPEN')                        
+
+                            <form action="{{ url('my/workday/status/action') }}" method="POST" >
                                 @csrf
-                                <input type="hidden" name="status" value="DESK_OPEN">
-                                <button type="submit" class="btn btn-success waves-effect waves-light">
-                                    <span class="btn-label"><i class="mdi mdi-check-all"></i></span>Open Your Desk
-                                </button>                            
+                                <input type="hidden" name="status" value="DESK_CLOSE">
+                                <button type="submit" class="btn btn-danger waves-effect waves-light float-right">
+                                    <span class="btn-label"><i class="mdi mdi-power"></i></span>Close Your Desk
+                                </button>
+                                <br><br>
+                            
                             </form>
                             <br>
-                        @endif
+
+                        @elseif($DESK_OPEN == 'ON_DESK')
                         
+                            <form action="{{ url('my/workday/status/action') }}" method="POST" >
+                                @csrf
+                                <input type="hidden" name="status" value="DESK_CLOSE">
+                                <button type="submit" class="btn btn-danger waves-effect waves-light float-right">
+                                    <span class="btn-label"><i class="mdi mdi-power"></i></span>Close Your Desk
+                                </button>
+                                <br><br>
+                            
+                            </form>
+                            <br>
+
+                        @endif
+
+                        
+                    @else
+
+                        <form action="{{ url('my/workday/status/action') }}" method="POST" >
+                            @csrf
+                            <input type="hidden" name="status" value="DESK_OPEN">
+                            <button type="submit" class="btn btn-success waves-effect waves-light float-right">
+                                <span class="btn-label"><i class="mdi mdi-power"></i></span>Open Your Desk
+                            </button>
+                            <br><br>                        
+                        </form>
+                        <br>
+
                     @endif
+
+
+                    
+
+                    
+
+
                 <div class="table-responsive">
                     <div class="form-group">
                         <input type="text" id="search" class="form-control ">          

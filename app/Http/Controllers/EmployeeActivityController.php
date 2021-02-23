@@ -101,7 +101,7 @@ class EmployeeActivityController extends Controller
 				$info['employeeActivityId'] = $new->id;
 				$info['actionTime'] = date('H:i:s');
 				$info['status'] = 'ON_DESK';
-				$info['note'] = 'Started Working Immidiately After Opening Desk.';
+				$info['note'] = 'The Desk Is Open, Working Hours Have Started!';
 				$info['userAgent'] = $request->header('User-Agent');
 				$info['userIp'] = $request->ip();
 				$info['createdBy'] = $UserId;
@@ -114,7 +114,19 @@ class EmployeeActivityController extends Controller
 		elseif ($request->status == 'DESK_CLOSE') {
 			$proceed = true;
 			$employeeActivityId = DailyEmployeeActivity::where('created_by', Auth::id())->whereDate('work_date', Carbon::today())->first()->id;
+			// $employeeActivityId = DailyEmployeeActivity::where('created_by', Auth::id())->whereDate('work_date', Carbon::today())->first();
+			// dd($employeeActivityId);
 			if ($proceed == true) {
+				$info['employeeActivityId'] = $employeeActivityId;
+				$info['actionTime'] = date('H:i:s');
+				$info['status'] = 'OFF_DESK';
+				$info['note'] = 'The Desk Is Closed, Working Hours Have Ended!';
+				$info['userAgent'] = $request->header('User-Agent');
+				$info['userIp'] = $request->ip();
+				$info['createdBy'] = $UserId;
+
+				$this->__newActivity($info);
+
 				$info['employeeActivityId'] = $employeeActivityId;
 				$info['actionTime'] = date('H:i:s');
 				$info['status'] = $request->status;
@@ -124,6 +136,8 @@ class EmployeeActivityController extends Controller
 				$info['createdBy'] = $UserId;
 
 				$this->__newActivity($info);
+
+				
 			}
 		}
 		elseif ($request->status == 'OFF_DESK') {
@@ -164,47 +178,59 @@ class EmployeeActivityController extends Controller
 	}
 
 	public function myWorkDays(){
-		$List = DailyEmployeeActivity::where('created_by', Auth::id())->orderBy('id', 'desc');
-		$DESK_OPEN = false;
-		$Activity = DailyEmployeeActivityDetail::where('created_by', Auth::id())->orderBy('id', 'desc')->limit(1)->first();
+		$DailyActivityList = DailyEmployeeActivity::where('created_by', Auth::id());
+		$List = $DailyActivityList->orderBy('id', 'desc');
+		$DESK_OPEN = '';
+		$Today = $DailyActivityList->whereDate('work_date', Carbon::today())->count();
+		$Activity = DailyEmployeeActivityDetail::where('created_by', Auth::id())->orderBy('id', 'desc')->whereDate('created_at', date('Y-m-d'))->limit(1)->first();
+		$CLOSED = false;
+		$proceed = '';
+
 
 		if($Activity != null){
 			if($Activity->status == 'DESK_OPEN' ){
-				$DESK_OPEN = true;
+				$DESK_OPEN = 'DESK_OPEN';
 			}
 			else if($Activity->status == 'ON_DESK'){
-				$DESK_OPEN = true;
+				$DESK_OPEN = 'ON_DESK';
 			}
 			else if($Activity->status == 'OFF_DESK'){
-				$DESK_OPEN = true;
+				$DESK_OPEN = 'OFF_DESK';
+			}else{
+				$proceed = 'DESK_CLOSE';
+				$DESK_OPEN = 'DESK_CLOSE';
 			}
 		}
 
-		$myDailyWorkHour = $List->get();
-		$proceed = true;
+		
 
-		if($List->exists()){
-			$proceed = false;
-		}	
+		$myDailyWorkHour = DailyEmployeeActivity::where('created_by', Auth::id())->orderBy('id', 'desc')->get();
+		// $proceed = true;
+
+		// if($Activity->status()){
+		// 	$proceed = false;
+		// }	
 
 
 		
 
-		return view('myDailyWorkHour', compact('myDailyWorkHour', 'DESK_OPEN', 'proceed'));
+		return view('myDailyWorkHour', compact('myDailyWorkHour', 'DESK_OPEN', 'proceed', 'CLOSED', 'Today'));
 	}
 
 	public function myWorkDayDetails($date, $activity_id){
 		$data = DailyEmployeeActivityDetail::where('employee_activity_id', $activity_id)->where('created_by', Auth::id());
 		$myWorkDayDetails = $data->orderBy('id', 'desc')->get();
 		$Activity = DailyEmployeeActivityDetail::where('employee_activity_id', $activity_id)->where('created_by', Auth::id())->orderBy('id', 'desc')->limit(1)->first();
+		
 		$status = DailyEmployeeActivity::where('created_by', Auth::id())->whereDate('work_date', Carbon::today())->count();
+
 		$DESK_OPEN = false;
 
 		if($status == 1 ){
 			$DESK_OPEN = true;
 		}
 
-		return view('myDailyDetails', compact('myWorkDayDetails', 'DESK_OPEN', 'Activity'));
+		return view('myDailyDetails', compact('myWorkDayDetails', 'DESK_OPEN', 'Activity', 'date'));
 	}
 
 	public function employeeWorkDayList(){

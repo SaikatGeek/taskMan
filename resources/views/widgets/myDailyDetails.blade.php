@@ -6,6 +6,7 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
+                @if( $date == date('Y-m-d') )
                   <div class="row">
                     @if($DESK_OPEN == true)
                         @if($Activity->status == 'OFF_DESK')
@@ -141,7 +142,10 @@
 
                     @endif
 
-                  </div>
+                </div>
+
+                @endif
+
                 
 
 
@@ -156,9 +160,9 @@
                             <tr>
                                 <th>Sl</th>
                                 <th>Time</th>
-                                <th>Activity</th>
-                                <th>Note</th>
-                                                                
+                                <th width="10%">Activity</th>
+                                <th></th>
+                                <th>Note</th>                 
                             </tr>
                         </thead>
                     
@@ -169,21 +173,30 @@
                                     <td>{{ ++$index }}</td>
                                     <td>{{ date("h:i A", strtotime($item->action_time) ) }}</td>                                                         
                                     <td>
-                                        <span class="btn 
+                                        <span class="btn btn-sm btn-block
                                             @if($item->status == 'ON_DESK')
                                                 btn-success
                                             @elseif($item->status == 'OFF_DESK')
-                                                btn-danger
+                                                btn-warning
                                             @elseif($item->status == 'DESK_OPEN')
                                                 btn-primary
                                             @elseif($item->status == 'DESK_CLOSE')
-                                                btn-black
+                                                btn-dark
                                             @endif
                                         ">                                            
-                                            {{ $item->status }}
+                                            @if($item->status == 'ON_DESK')
+                                                ON
+                                            @elseif($item->status == 'OFF_DESK')
+                                                PAUSE
+                                            @elseif($item->status == 'DESK_OPEN')
+                                                OPENED
+                                            @elseif($item->status == 'DESK_CLOSE')
+                                                CLOSED
+                                            @endif
                                         </span>
                                         
                                     </td>
+                                    <td></td>
                                     <td>{{ $item->note }}</td>
                                     
                                 </tr>

@@ -63,14 +63,17 @@ $(document).ready(function() {
                         <td>${ value.designation }</td>
                         <td>${ value.date }</td>                        
                         <td>${ value.time }</td>  
-                        <td> <span class="btn 
-                        ${value.status == 'ON_DESK' ? 'btn-success':'' }
-                        ${value.status == 'OFF_DESK' ? 'btn-danger':'' }
-                        ${value.status == 'DESK_OPEN' ? 'btn-primary':'' }
-                        ${value.status == 'DESK_CLOSE' ? 'btn-black':'' }
-                                            
-                                           
-                                        ">  ${ value.status }</td>  
+                        <td> <span class="btn btn-sm btn-block
+                            ${value.status == 'ON_DESK' ? 'btn-success':'' }
+                            ${value.status == 'OFF_DESK' ? 'btn-danger':'' }
+                            ${value.status == 'DESK_OPEN' ? 'btn-primary':'' }
+                            ${value.status == 'DESK_CLOSE' ? 'btn-dark':'' }                                           
+                        ">  
+                            ${value.status == 'ON_DESK' ? 'ON':'' }
+                            ${value.status == 'OFF_DESK' ? 'PAUSE':'' }
+                            ${value.status == 'DESK_OPEN' ? 'OPENED':'' }
+                            ${value.status == 'DESK_CLOSE' ? 'CLOSED':'' }
+                        </td>  
                         <td>${ value.note }</td>  
                         <td>
                             <a class="btn btn-primary btn-sm" href="{{ url('employee/single/workday') }}/${value.id}">View</a>
