@@ -5,9 +5,9 @@
       <div class="card">
         <div class="card-body">     
 
-            <h4 class="mb-3 header-title">History: <i class="text-success">{{ date('F j, Y', strtotime($work_date)) }}</i> </h4>
+            <h4 class="mb-3 header-title">{{ date('j F, Y') }}</h4>
             <div class="form-group">
-                <input type="text" id="search" class="form-control ">          
+                <input type="text" id="search" class="form-control " Placeholder="Search">          
             </div>
             
             <div class="table-responsive">
@@ -17,9 +17,8 @@
                             <th>Sl</th>
                             <th>Name</th>
                             <th>Designation</th>
-                            <th>Date</th>
                             <th>Latest Time</th>
-                            <th>Latest Status</th>
+                            <th width="10%">Latest Status</th>
                             <th>Note</th>
                             <th>View</th>                                                          
                         </tr>
@@ -46,13 +45,13 @@ $(document).ready(function() {
 
     var workHistory = window.setInterval(function(){
       GetEmployeeDataTable();
-    }, 5000);
+    }, 10000);
 
     function GetEmployeeDataTable() {
         let TableList = $('#employeeHistory');
         $.ajax({
             type:'get',
-            url:"{{ url('ajax/employee/workday/list').'/'.$work_date }}",
+            url:"{{ url('ajax/employee/workday/daily/list') }}",
             data:{},
             success:function(data){
                 TableList.empty();
@@ -61,9 +60,8 @@ $(document).ready(function() {
                         <td>${++key}</td>
                         <td>${ value.name }</td>
                         <td>${ value.designation }</td>
-                        <td>${ value.date }</td>                        
                         <td>${ value.time }</td>  
-                        <td> <span class="btn btn-sm btn-block
+                        <td width="10%"> <span class="btn btn-sm btn-block
                             ${value.status == 'ON_DESK' ? 'btn-success':'' }
                             ${value.status == 'OFF_DESK' ? 'btn-danger':'' }
                             ${value.status == 'DESK_OPEN' ? 'btn-primary':'' }
@@ -92,5 +90,28 @@ $(document).ready(function() {
     
 </script>
 @endpush
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

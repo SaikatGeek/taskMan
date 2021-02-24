@@ -55,6 +55,21 @@
                     
 
                     <li class="menu-title">Navigation</li>
+
+                    @if(Auth::user()->type == 1)
+                        <li>
+                            <a href="{{ url('/realtime/workday') }}" class="{{ (request()->is('/realtime/workday')) ? 'active' : '' }}">
+                                <i data-feather="disc"></i>
+                                <span> Realtime Work Hour </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('employee/workdate/list') }}" class="{{ (request()->is('employee/workdate/list')) ? 'active' : '' }}">
+                                <i data-feather="list"></i>
+                                <span> Employee Daily History </span>
+                            </a>
+                        </li>
+                    @endif
                     
                     <li>
                         <a href="{{ url('/') }}" class="{{ (request()->is('/')) ? 'active' : '' }}">
@@ -66,6 +81,8 @@
         
                     
                     @if(Auth::user()->type == 1)
+
+                        
 
                         <li>
                             <a href="{{ url('/today/tasks') }}" class="{{ (request()->is('/today/tasks')) ? 'active' : '' }}">
@@ -115,15 +132,17 @@
                                 <span> User </span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ url('employee/workday/list') }}" class="{{ (request()->is('employee/workday/list')) ? 'active' : '' }}">
-                                <i data-feather="list"></i>
-                                <span> Employee Daily History </span>
-                            </a>
-                        </li>
+                        
 
 
                     @else
+                    <li>
+                        <a href="{{ url('/my/workdays') }}" class="{{ (request()->is('/')) ? 'active' : '' }}">
+                            <i data-feather="list"></i>
+                            <span> My Work Day </span>
+                        </a>
+                    </li>
+
                     <li>
                         <a href="{{ url('member/tasks') }}"  class="{{ (request()->is('/member/tasks')) ? 'active' : '' }}">
                             <i data-feather="align-left"></i>
@@ -152,12 +171,7 @@
                         </a>
                     </li>
 
-                    <li>
-                        <a href="{{ url('/my/workdays') }}" class="{{ (request()->is('/')) ? 'active' : '' }}">
-                            <i data-feather="list"></i>
-                            <span> My Work Day </span>
-                        </a>
-                    </li>
+                    
 
                     
 

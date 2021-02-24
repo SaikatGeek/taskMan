@@ -30,7 +30,7 @@ class ProjectController extends Controller
     public function dashboard(){
         $auth = Auth::user();
         if($auth->type == 1){
-            $TotalProject = Projects::all();
+            $TotalProject = Projects::orderBy('id', 'asc')->get();
             $TotalCompletedProject = Projects::where('status', 'Completed')->count();
             $TotalTask = Task::all();
             $TotalAcceptedTask = Task::where('status', 'Accepted')->count();
@@ -117,7 +117,7 @@ class ProjectController extends Controller
     }
 
     public function projectPage(){
-        $ProjectList = Projects::orderBy('id', 'desc')->get();
+        $ProjectList = Projects::orderBy('id', 'asc')->get();
         return view('projects', compact('ProjectList'));
     }
 
@@ -778,6 +778,8 @@ class ProjectController extends Controller
 
         return response()->json(['status'=>true]);
     }
+
+    
 
 
 

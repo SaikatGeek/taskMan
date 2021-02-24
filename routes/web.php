@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth']], function () {
   Route::get('/', [App\Http\Controllers\ProjectController::class, 'dashboard']);
   Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout']);
   Route::any('/password/change', [App\Http\Controllers\UserController::class, 'passwordChange']);
+  Route::post('/users/update', [App\Http\Controllers\UserController::class, 'updateUser']);
   Route::post('/users', [App\Http\Controllers\UserController::class, 'addUser']);
   Route::get('/users', [App\Http\Controllers\UserController::class, 'UserPage']);
   Route::post('/projects', [App\Http\Controllers\ProjectController::class, 'addProject']);
@@ -69,27 +70,30 @@ Route::group(['middleware' => ['auth']], function () {
   Route::get('notifications/read', [App\Http\Controllers\ProjectController::class, 'readNotifications']);
   Route::get('notifications/unread', [App\Http\Controllers\ProjectController::class, 'unreadNotifications']);
   Route::post('ajax/notifications/make/read', [App\Http\Controllers\ProjectController::class, 'ajaxMakeNotificationRead']);
-  Route::get('ajax/employee/workday/list', [App\Http\Controllers\EmployeeActivityController::class, 'ajaxEmployeeWorkdayList']);
+  Route::get('ajax/employee/workday/list/{work_date}', [App\Http\Controllers\EmployeeActivityController::class, 'ajaxEmployeeWorkdayList']);
+  Route::get('ajax/employee/workday/daily/list', [App\Http\Controllers\EmployeeActivityController::class, 'ajaxEmployeeWorkdayDailyList']);
   
   Route::get('about', [App\Http\Controllers\HomeController::class, 'about']);
-
-
 
 
   // CHAT
   Route::get('chats/thread', [App\Http\Controllers\ChatController::class, 'myChat']);
   Route::get('contacts', [App\Http\Controllers\ChatController::class, 'contacts']);
 
-  //DESK TIME
+  // DESK TIME
   Route::get('my/workdays', [App\Http\Controllers\EmployeeActivityController::class, 'myWorkDays']);
   Route::get('my/workday/{date}/{activity_id}', [App\Http\Controllers\EmployeeActivityController::class, 'myWorkDayDetails']);
-  Route::get('employee/workday/list', [App\Http\Controllers\EmployeeActivityController::class, 'employeeWorkDayList']);
+  Route::get('employee/workdate/list', [App\Http\Controllers\EmployeeActivityController::class, 'employeeWorkDateList']);
   Route::get('employee/single/workday/{workday_id}', [App\Http\Controllers\EmployeeActivityController::class, 'employeeSingleWorkdayDetails']);
+  // Route::get('employee/workday/{work_date}', [App\Http\Controllers\EmployeeActivityController::class, 'employeeSingleWorkdayDetails']);
+  Route::get('employee/workday/{work_date}', [App\Http\Controllers\EmployeeActivityController::class, 'employeeDailyHourList']);
 
   Route::post('my/workday/status/action', [App\Http\Controllers\EmployeeActivityController::class, 'myWorkDayStatus']);
+  
+  // RealTime Workday
+  Route::get('realtime/workday', [App\Http\Controllers\EmployeeActivityController::class, 'realtimeWorkday']);
+
+  Route::get('time/{activity_id}', [App\Http\Controllers\EmployeeActivityController::class, 'productiveTime']);
+
         
 });
-
-
-
-

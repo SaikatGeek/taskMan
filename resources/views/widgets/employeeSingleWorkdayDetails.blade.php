@@ -5,8 +5,8 @@
 
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-body">  
-
+                <div class="card-body">   
+                    <h4 class="mb-3 header-title"> <i >{{ $User->user->name }}, {{ date('F j, Y', strtotime($User->work_date)) }}</i> </h4>
 
                 <div class="table-responsive">
                     <div class="form-group">

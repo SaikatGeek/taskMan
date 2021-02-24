@@ -3,7 +3,7 @@
     <div class="card-box">
       <h4 class="header-title"><span class="badge badge-danger"></span>
         <button type="button" class="btn btn-lg btn-danger waves-effect waves-light">
-            <span class="btn-label"><i class="mdi mdi-bell-check-outline"></i></span>{{count($NotificationList)}}
+            <span class="btn-label"><i class="mdi mdi-bell-check-outline"></i></span>{{ count($NotificationList) }}
         </button>
       </h4>
       
@@ -15,7 +15,7 @@
       </div>
         @foreach($NotificationList as $index => $item)              
 
-          <a  href="{{ url('/').''.$item->reference }}"  id="notification">
+          <a  href="{{ url('/').''.$item->reference }}"  class="notification">
             <div class="card-box mb-2" >
               <div class="row align-items-center">
                 <div class="col-sm-8">
@@ -90,7 +90,7 @@
 <script type="text/javascript">
     $( document ).ready(function() {
         
-      var $rows = $('#notification');
+      var $rows = $('.notification');
       
       $('#search').keyup(function() {
           var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();

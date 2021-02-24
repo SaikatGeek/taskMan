@@ -9,10 +9,69 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Http\Controllers\Helper;
 use Auth;
+use DB;
 use Carbon\Carbon;
+use DateTime;
 
 class EmployeeActivityController extends Controller
 {
+
+	public function productiveTime($activity_id){
+		$day = DailyEmployeeActivityDetail::where('employee_activity_id', $activity_id)->get();		
+		$ondesk = [];
+		$offdesk = [];
+		$productiveTime = [];
+		$time = [];
+		foreach($day as $index=>$value){
+
+			if($value->status == 'DESK_OPEN'){
+				$deskOpen = $value->action_time;
+			}
+			elseif($value->status == 'DESK_CLOSE'){
+				$deskClose = $value->action_time;
+			}			
+			// elseif ($value->status == 'ON_DESK'){
+			// 	$ondesk[$index] = $value->action_time;
+			// 	$ondeskLastKey = $index;
+			// }
+			// elseif ($value->status == 'OFF_DESK'){
+			// 	$offdesk[$index] = $value->action_time;
+			// 	$offdeskLastKey = $index;
+			// }
+			else{
+				$time[$index] =  $value->action_time;
+			}
+		}
+
+		$p = 0;
+
+		foreach($time as $index => $value ){
+			dump($value);
+		}
+		
+
+
+
+		dd($deskOpen,  $time );   
+
+	}
+
+	public function __productiveTime($activity_id){
+		$day = DailyEmployeeActivityDetail::where('employee_activity_id', $activity_id)->get();
+
+		foreach($day as $value){
+			if($value->status == 'ON_DESK'){
+				$deskOpen = $value->action_time;
+			}
+			elseif($value->status == 'OFF_DESK'){
+				$deskClose = $value->action_time;
+			}			
+		}
+
+
+		// dd($deskOpen, $deskClose);
+
+	}
     
 	public function __newActivity($info){
 
@@ -28,19 +87,19 @@ class EmployeeActivityController extends Controller
 
 	  if($newRow->save()){
 	  	if($info['status'] == "DESK_OPEN"){
-	  		$details = $User->name." has opended their desk at " . date('h:i A', strtotime($newRow->action_time))." with IP: " . $newRow->user_ip.".";
+	  		$details = $User->name." has opended their desk at <b>" . date('h:i A', strtotime($newRow->action_time))."</b> with IP: <b>" . $newRow->user_ip."</b>.";
 	  		$reference = "/employee/workday/list";
 	  		$entity = "DESK_OPEN";
 	  	}elseif ($info['status'] == "DESK_CLOSE") {
-	  		$details = $User->name." has closed their desk at " . date('h:i A', strtotime($newRow->action_time))." with IP: " . $newRow->user_ip.".";
+	  		$details = $User->name." has closed their desk at <b>" . date('h:i A', strtotime($newRow->action_time))."</b> with IP: <b>" . $newRow->user_ip."</b>.";
 	  		$reference = "/employee/workday/list";
 	  		$entity = "DESK_CLOSE";
 	  	}elseif ($info['status'] == "ON_DESK") {
-	  		$details = $User->name." has joined at their work at " . date('h:i A', strtotime($newRow->action_time))." with IP: " . $newRow->user_ip.".";
+	  		$details = $User->name." has joined at their work at <b>" . date('h:i A', strtotime($newRow->action_time))."</b> with IP: <b>" . $newRow->user_ip."</b>.";
 	  		$reference = "/employee/workday/list";
 	  		$entity = "ON_DESK";
 	  	}elseif ($info['status'] == "OFF_DESK") {
-	  		$details = $User->name." has taken a break at " . date('h:i A', strtotime($newRow->action_time))." with IP: " . $newRow->user_ip.".";
+	  		$details = $User->name." has taken a break at <b>" . date('h:i A', strtotime($newRow->action_time))."</b> with IP: <b>" . $newRow->user_ip."</b>.";
 	  		$reference = "/employee/workday/list";
 	  		$entity = "OFF_DESK";
 	  	}
@@ -114,28 +173,47 @@ class EmployeeActivityController extends Controller
 		elseif ($request->status == 'DESK_CLOSE') {
 			$proceed = true;
 			$employeeActivityId = DailyEmployeeActivity::where('created_by', Auth::id())->whereDate('work_date', Carbon::today())->first()->id;
+			$lastStatus = DailyEmployeeActivityDetail::where('employee_activity_id', $employeeActivityId)
+										->orderBy('id', 'desc')
+										->limit(1)->first()->status;
+
+
 			// $employeeActivityId = DailyEmployeeActivity::where('created_by', Auth::id())->whereDate('work_date', Carbon::today())->first();
 			// dd($employeeActivityId);
 			if ($proceed == true) {
-				$info['employeeActivityId'] = $employeeActivityId;
-				$info['actionTime'] = date('H:i:s');
-				$info['status'] = 'OFF_DESK';
-				$info['note'] = 'The Desk Is Closed, Working Hours Have Ended!';
-				$info['userAgent'] = $request->header('User-Agent');
-				$info['userIp'] = $request->ip();
-				$info['createdBy'] = $UserId;
+				if($lastStatus == 'OFF_DESK'){				
 
-				$this->__newActivity($info);
+					$info['employeeActivityId'] = $employeeActivityId;
+					$info['actionTime'] = date('H:i:s');
+					$info['status'] = $request->status;
+					$info['note'] =  'DESK CLOSED';
+					$info['userAgent'] = $request->header('User-Agent');
+					$info['userIp'] = $request->ip();
+					$info['createdBy'] = $UserId;
 
-				$info['employeeActivityId'] = $employeeActivityId;
-				$info['actionTime'] = date('H:i:s');
-				$info['status'] = $request->status;
-				$info['note'] =  'DESK CLOSED';
-				$info['userAgent'] = $request->header('User-Agent');
-				$info['userIp'] = $request->ip();
-				$info['createdBy'] = $UserId;
+					$this->__newActivity($info);
+				}else{
+					$info['employeeActivityId'] = $employeeActivityId;
+					$info['actionTime'] = date('H:i:s');
+					$info['status'] = 'OFF_DESK';
+					$info['note'] = 'The Desk Is Closed, Working Hours Have Ended!';
+					$info['userAgent'] = $request->header('User-Agent');
+					$info['userIp'] = $request->ip();
+					$info['createdBy'] = $UserId;
 
-				$this->__newActivity($info);
+					$this->__newActivity($info);
+
+					$info['employeeActivityId'] = $employeeActivityId;
+					$info['actionTime'] = date('H:i:s');
+					$info['status'] = $request->status;
+					$info['note'] =  'DESK CLOSED';
+					$info['userAgent'] = $request->header('User-Agent');
+					$info['userIp'] = $request->ip();
+					$info['createdBy'] = $UserId;
+
+					$this->__newActivity($info);
+				}
+				
 
 				
 			}
@@ -205,11 +283,7 @@ class EmployeeActivityController extends Controller
 		
 
 		$myDailyWorkHour = DailyEmployeeActivity::where('created_by', Auth::id())->orderBy('id', 'desc')->get();
-		// $proceed = true;
-
-		// if($Activity->status()){
-		// 	$proceed = false;
-		// }	
+		
 
 
 		
@@ -224,6 +298,8 @@ class EmployeeActivityController extends Controller
 		
 		$status = DailyEmployeeActivity::where('created_by', Auth::id())->whereDate('work_date', Carbon::today())->count();
 
+		// $ProductiveTime = $this->__productiveTime($activity_id);
+
 		$DESK_OPEN = false;
 
 		if($status == 1 ){
@@ -233,18 +309,19 @@ class EmployeeActivityController extends Controller
 		return view('myDailyDetails', compact('myWorkDayDetails', 'DESK_OPEN', 'Activity', 'date'));
 	}
 
-	public function employeeWorkDayList(){
-
-		return view('employeeWorkDayList');
-
+	public function employeeWorkDateList(){
+		$List = DailyEmployeeActivity::orderBy('id', 'desc')->get('work_date')->groupBy(function ($val) {
+        return Carbon::parse($val->work_date)->format('Y-m-d');
+    });
+		
+		return view('employeeWorkDateList', compact('List'));
 	}
 
-	public function ajaxEmployeeWorkdayList(){
-		$DailyEmployeeActivity = DailyEmployeeActivity::orderBy('id', 'desc')->get();
+	public function ajaxEmployeeWorkdayList($work_date){
+		$DailyEmployeeActivity = DailyEmployeeActivity::whereDate('work_date', $work_date)->orderBy('id', 'desc')->get();
 		$List = [];
 
 		foreach ($DailyEmployeeActivity as $key => $value) {
-
 			$value->date = date('d/m/Y', strtotime($value->work_date));
 			$value->time = date('h:i A', strtotime($value->activityDetails->action_time));
 			$value->status = DailyEmployeeActivityDetail::where('employee_activity_id', $value->id)->orderBy('id', 'desc')->limit(1)->first()->status;
@@ -259,8 +336,38 @@ class EmployeeActivityController extends Controller
 
 	public function employeeSingleWorkdayDetails($workday_id){
 		$List = DailyEmployeeActivityDetail::where('employee_activity_id', $workday_id)->orderBy('id', 'desc')->get();
+		$User = DailyEmployeeActivity::find($workday_id);
 
-		return view('employeeSingleWorkdayDetails', compact('List'));
+		return view('employeeSingleWorkdayDetails', compact('List', 'User'));
+	}
+
+	public function employeeDailyHourList($work_date){
+		// $List = DailyEmployeeActivity::whereDate('work_date', $work_date)->orderBy('id', 'desc')->get();
+
+		return view('employeeWorkDayList', compact('work_date'));
+	}
+
+	public function realtimeWorkday(){
+			return view('realtimeWorkday');
+	}
+	
+	public function ajaxEmployeeWorkdayDailyList(){
+		$DailyEmployeeActivity = DailyEmployeeActivity::whereDate('work_date', Carbon::today())->orderBy('id', 'desc')->get();
+
+		$List = [];
+
+		foreach ($DailyEmployeeActivity as $key => $value) {
+
+			$value->date = date('d/m/Y', strtotime($value->work_date));
+			$value->time = date('h:i A', strtotime($value->activityDetails->action_time));
+			$value->status = DailyEmployeeActivityDetail::where('employee_activity_id', $value->id)->orderBy('id', 'desc')->limit(1)->first()->status;
+			$value->note = DailyEmployeeActivityDetail::where('employee_activity_id', $value->id)->orderBy('id', 'desc')->limit(1)->first()->note;
+			$value->name = $value->user->name;
+			$value->designation = $value->user->designation;
+			$List[$key] = $value;
+		}
+
+		return response()->json($List);
 	}
 
 

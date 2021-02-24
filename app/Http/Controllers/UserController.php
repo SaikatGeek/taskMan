@@ -55,6 +55,44 @@ class UserController extends Controller
         return redirect()->back()->with('message', 'New User Created Successfully!');
     }
 
+    public function updateUser(Request $request){
+      
+
+
+      $User = User::find($request->id);
+      $User->name = $request->name;
+      $User->email = $request->email;
+      $User->phone = $request->phone;
+      $User->type = $request->type;
+      $User->designation = $request->designation;
+      $User->status = 1;
+      $User->save();
+
+      if ($request->hasFile('image')) {
+        $imageName = "U-{$User->id}.{$request->image->extension()}";  
+        $request->image->move(public_path('images/profile'), $imageName);
+  
+        $User->image = 'images/profile/'.$imageName;
+        $User->save();
+      }
+
+      
+
+      $reference = '/users';
+      $Admins = User::where('type', 1)->get();
+
+      foreach ($Admins as $key => $value) {
+          $details = '<b>'.Auth::user()->name.'</b> has updated an user named <b>'. $request->name . '</b>.';
+          Helper::notify($details, $reference, Auth::id(), $value->id, 'USER_ADD');                
+      }
+
+      
+      
+      return redirect()->back()->with('message', 'User Updated Successfully!');
+
+
+    }
+
     public function UserPage(){
         $UserList = User::orderBy('id', 'desc')->get();
         return view('user', compact('UserList'));
